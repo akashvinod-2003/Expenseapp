@@ -4,7 +4,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, setDoc, updateDoc, orderBy, where, writeBatch, getDocs, getDoc } from 'firebase/firestore';
 
-// --- ICONS COMPONENT ---
+// --- 1. ICON SYSTEM ---
 const Icon = ({ name, size = 20, color = "currentColor", className = "" }) => {
     const paths = {
         plus: "M12 5v14M5 12h14", trash: "M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", trendingUp: "M23 6l-9.5 9.5-5-5L1 18", calendar: "M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 0V2m-14 2V2", pieChart: "M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z", chevronDown: "M6 9l6 6 6-6", chevronUp: "M18 15l-6-6-6 6", logOut: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9", lock: "M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-7a4 4 0 0 1 4 4v3H8V8a4 4 0 0 1 4-4z", shield: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z", userCheck: "M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M16 11l2 2 4-4", userX: "M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M18 8l5 5 M23 8l-5 5", clock: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2", tag: "M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z", check: "M20 6L9 17l-5-5", sparkles: "M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z", search: "M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z", settings: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z", merge: "M12 5v14M8 9l4-4 4 4", arrowRight: "M5 12h14M12 5l7 7-7 7", database: "M3 5c0-1.66 4.03-3 9-3s9 1.34 9 3V19c0 1.66-4.03 3-9 3s-9-1.34-9-3V5zm0 0v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5", link: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
@@ -13,6 +13,7 @@ const Icon = ({ name, size = 20, color = "currentColor", className = "" }) => {
     return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d={paths[name] || paths['tag']} /></svg>;
 };
 
+// --- 2. CONFIG ---
 const ADMIN_EMAILS = ["akasheroor1@gmail.com"]; 
 const firebaseConfig = { apiKey: "AIzaSyB-CFKSfq5sE_NyAUhUf9lviBFA3bIavLc", authDomain: "expenseapp-ff0eb.firebaseapp.com", projectId: "expenseapp-ff0eb", storageBucket: "expenseapp-ff0eb.firebasestorage.app", messagingSenderId: "823889701126", appId: "1:823889701126:web:cabaab6a25050d6baf9687", measurementId: "G-86FFS0N4S0" };
 const app = initializeApp(firebaseConfig);
@@ -25,7 +26,7 @@ const COLORS = ['bg-red-500', 'bg-orange-500', 'bg-amber-500', 'bg-yellow-500', 
 const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
 const formatDate = (d) => d ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(d + 'T00:00:00')) : '';
 
-// --- Settings Panel ---
+// --- 3. SETTINGS PANEL ---
 const SettingsPanel = ({ onClose, user, categories }) => {
     const [sourceCat, setSourceCat] = useState('');
     const [targetCat, setTargetCat] = useState('');
@@ -33,7 +34,7 @@ const SettingsPanel = ({ onClose, user, categories }) => {
     const [recoverLoading, setRecoverLoading] = useState(false);
     const [fixLoading, setFixLoading] = useState(false);
 
-    // 1. FIX BROKEN LINKS
+    // FIX LINKS
     const handleFixLinks = async () => {
         setFixLoading(true);
         try {
@@ -49,134 +50,102 @@ const SettingsPanel = ({ onClose, user, categories }) => {
             const batch = writeBatch(db);
             let updatedCount = 0;
 
-            snapExp.forEach(doc => {
-                const exp = doc.data();
+            snapExp.forEach(docSnapshot => { // FIX: Renamed doc to docSnapshot
+                const exp = docSnapshot.data();
                 const isLinked = categories.some(c => c.id === exp.category);
                 if (!isLinked) {
                     const oldLabel = pubIdToLabel[exp.category];
                     if (oldLabel && privCatMap[oldLabel]) {
-                        batch.update(doc.ref, { category: privCatMap[oldLabel] });
+                        batch.update(docSnapshot.ref, { category: privCatMap[oldLabel] });
                         updatedCount++;
                     }
                 }
             });
-            
-            if (updatedCount > 0) {
-                await batch.commit();
-                alert(`Fixed links for ${updatedCount} expenses!`);
-            } else {
-                alert("No broken links found.");
-            }
-        } catch (e) { console.error(e); alert("Fix Error: " + e.message); }
+            if (updatedCount > 0) { await batch.commit(); alert(`Fixed ${updatedCount} links!`); } else { alert("No broken links."); }
+        } catch (e) { alert(e.message); }
         setFixLoading(false);
     }
 
-    // 2. FULL RESTORE
+    // RECOVERY
     const handleFullRestore = async () => {
-        if (!confirm("This will find ALL shared/public data (Expenses AND Categories) and copy them to your Private Account. Continue?")) return;
+        if (!confirm("Restore all data from Shared?")) return;
         setRecoverLoading(true);
         try {
             const batch = writeBatch(db);
             let totalCount = 0;
             const qExp = query(collection(db, 'family_expenses'), where('userId', '==', user.uid));
             const snapExp = await getDocs(qExp);
-            snapExp.forEach(doc => {
-                const newRef = doc(collection(db, 'users', user.uid, 'expenses'));
-                batch.set(newRef, doc.data());
-                totalCount++;
+            
+            snapExp.forEach(docSnapshot => { // FIX: Renamed doc to docSnapshot
+                const newRef = doc(collection(db, 'users', user.uid, 'expenses')); 
+                batch.set(newRef, docSnapshot.data()); 
+                totalCount++; 
             });
+            
+            const qPubCats = query(collection(db, 'categories'));
+            const snapPubCats = await getDocs(qPubCats);
             const qMyCats = query(collection(db, 'users', user.uid, 'categories'));
             const snapMyCats = await getDocs(qMyCats);
             const myCatLabels = snapMyCats.docs.map(d => d.data().label.toLowerCase());
-            const qPubCats = query(collection(db, 'categories'));
-            const snapPubCats = await getDocs(qPubCats);
-            snapPubCats.forEach(doc => {
-                const catData = doc.data();
+
+            snapPubCats.forEach(docSnapshot => { // FIX: Renamed doc to docSnapshot
+                const catData = docSnapshot.data();
                 if (!myCatLabels.includes(catData.label.toLowerCase())) {
-                    const newCatRef = doc(collection(db, 'users', user.uid, 'categories'));
-                    batch.set(newCatRef, catData);
-                    totalCount++;
+                    const newCatRef = doc(collection(db, 'users', user.uid, 'categories')); 
+                    batch.set(newCatRef, catData); 
+                    totalCount++; 
                 }
             });
-            if (totalCount > 0) {
-                await batch.commit();
-                alert(`Success! Recovered ${totalCount} items.`);
-                window.location.reload(); 
-            } else {
-                alert("No new data found to recover.");
-            }
-        } catch (e) { console.error(e); alert("Recovery Error: " + e.message); }
+            if (totalCount > 0) { await batch.commit(); alert(`Recovered ${totalCount} items.`); window.location.reload(); } else { alert("No data."); }
+        } catch (e) { alert(e.message); }
         setRecoverLoading(false);
     };
 
-    // 3. MERGE
+    // MERGE
     const handleMerge = async () => {
-        if (!sourceCat || !targetCat || sourceCat === targetCat) { alert("Select different categories"); return; }
-        if (!confirm("Merge and delete source category?")) return;
+        if (!sourceCat || !targetCat || sourceCat === targetCat) return;
         setMergeLoading(true);
         try {
             const q = query(collection(db, 'users', user.uid, 'expenses'), where('category', '==', sourceCat));
             const snapshot = await getDocs(q);
             const batch = writeBatch(db);
-            snapshot.forEach(doc => batch.update(doc.ref, { category: targetCat }));
+            
+            snapshot.forEach(docSnapshot => { // FIX: Renamed doc to docSnapshot
+                batch.update(docSnapshot.ref, { category: targetCat });
+            });
+            
             batch.delete(doc(db, 'users', user.uid, 'categories', sourceCat));
             await batch.commit();
-            alert("Done!"); setSourceCat(''); setTargetCat('');
-        } catch (error) { alert("Failed: " + error.message); }
+            alert("Merged!"); setSourceCat(''); setTargetCat('');
+        } catch (error) { alert(error.message); }
         setMergeLoading(false);
     };
 
     return (
-        <div className="modal-overlay animate-fade-in">
-            <div className="modal-content glass-panel">
-                <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                    <h2 className="font-heading text-xl font-bold flex items-center gap-2"><Icon name="settings" size={24}/> Settings</h2>
-                    <button onClick={onClose} className="btn-icon"><Icon name="check" size={20}/></button>
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div style={{display:'flex', justifyContent:'space-between', marginBottom:'20px', alignItems:'center'}}>
+                    <h2 style={{fontSize:'20px', fontWeight:'700'}}>Settings</h2>
+                    <button onClick={onClose} className="btn-icon"><Icon name="check"/></button>
                 </div>
-                
-                <div className="glass-card p-4 mb-4" style={{borderColor: 'rgba(139, 92, 246, 0.3)', background: 'rgba(139, 92, 246, 0.05)'}}>
-                    <h3 className="font-bold text-sm mb-2 flex items-center gap-2" style={{color:'#a78bfa'}}><Icon name="link" size={16}/> Link Fixer</h3>
-                    <p className="text-xs text-muted mb-3">Breakdown missing? Expenses appearing as "Unknown"? Click this.</p>
-                    <button onClick={handleFixLinks} disabled={fixLoading} className="btn btn-primary w-full text-xs" style={{background: '#8b5cf6'}}>
-                        {fixLoading ? "Fixing..." : "Fix Broken Category Links"}
-                    </button>
+                <div className="input-group">
+                    <button onClick={handleFixLinks} disabled={fixLoading} className="btn btn-primary">{fixLoading?"Fixing...":"Fix Broken Category Links"}</button>
                 </div>
-                
-                <div className="glass-card p-4 mb-4" style={{borderColor: 'rgba(99, 102, 241, 0.3)', background: 'rgba(99, 102, 241, 0.05)'}}>
-                    <h3 className="font-bold text-sm mb-2 flex items-center gap-2 text-primary"><Icon name="database" size={16}/> Account Restore</h3>
-                    <p className="text-xs text-muted mb-3">Missing Tags or Expenses? Import everything from the old Shared version.</p>
-                    <button onClick={handleFullRestore} disabled={recoverLoading} className="btn btn-primary w-full text-xs">
-                        {recoverLoading ? "Recovering..." : "Sync & Restore Everything"}
-                    </button>
+                <div className="input-group">
+                    <button onClick={handleFullRestore} disabled={recoverLoading} className="btn btn-primary">{recoverLoading?"Restoring...":"Restore Shared Data"}</button>
                 </div>
-
-                <div className="glass-card p-4 mb-4">
-                    <h3 className="font-bold text-sm mb-2 flex items-center gap-2"><Icon name="merge" size={16}/> Merge Duplicates</h3>
-                    <div className="flex flex-col gap-3">
-                        <div>
-                            <label className="text-xs text-muted uppercase font-bold mb-1 block">Remove:</label>
-                            <select className="glass-input" value={sourceCat} onChange={e=>setSourceCat(e.target.value)}>
-                                <option value="">Select Duplicate...</option>
-                                {categories.map(c=><option key={c.id} value={c.id} style={{color:'black'}}>{c.label}</option>)}
-                            </select>
-                        </div>
-                        <div className="text-center text-muted"><Icon name="chevronDown"/></div>
-                        <div>
-                            <label className="text-xs text-muted uppercase font-bold mb-1 block">Keep:</label>
-                            <select className="glass-input" value={targetCat} onChange={e=>setTargetCat(e.target.value)}>
-                                <option value="">Select Target...</option>
-                                {categories.map(c=><option key={c.id} value={c.id} style={{color:'black'}}>{c.label}</option>)}
-                            </select>
-                        </div>
-                        <button onClick={handleMerge} disabled={mergeLoading} className="btn btn-secondary w-full mt-2">{mergeLoading ? "Merging..." : "Merge & Delete"}</button>
-                    </div>
+                <div className="input-group" style={{borderTop:'1px solid #333', paddingTop:'20px'}}>
+                    <label className="section-title">Merge Duplicates</label>
+                    <select className="input-field" value={sourceCat} onChange={e=>setSourceCat(e.target.value)} style={{marginBottom:'10px'}}><option value="">Remove...</option>{categories.map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</select>
+                    <select className="input-field" value={targetCat} onChange={e=>setTargetCat(e.target.value)} style={{marginBottom:'10px'}}><option value="">Keep...</option>{categories.map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</select>
+                    <button onClick={handleMerge} disabled={mergeLoading} className="btn btn-secondary" style={{width:'100%'}}>{mergeLoading?"Merging...":"Merge"}</button>
                 </div>
             </div>
         </div>
     );
 };
 
-// --- Admin Panel ---
+// --- ADMIN PANEL ---
 const AdminPanel = ({ onClose }) => {
     const [users, setUsers] = useState([]);
     useEffect(() => {
@@ -186,26 +155,27 @@ const AdminPanel = ({ onClose }) => {
     }, []);
     const updateUserStatus = async (uid, status) => await updateDoc(doc(db, 'user_meta', uid), { status });
     return (
-        <div className="modal-overlay animate-fade-in">
-            <div className="modal-content glass-panel">
-                <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                    <h2 className="font-heading text-xl font-bold flex items-center gap-2"><Icon name="shield" size={24}/> Admin</h2>
-                    <button onClick={onClose} className="btn-icon"><Icon name="check" size={20}/></button>
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div style={{display:'flex', justifyContent:'space-between', marginBottom:'20px'}}>
+                    <h2 style={{fontSize:'20px', fontWeight:'700'}}>Admin</h2>
+                    <button onClick={onClose} className="btn-icon"><Icon name="check"/></button>
                 </div>
-                <div style={{maxHeight: '60vh', overflowY: 'auto'}} className="flex flex-col gap-3">
-                    {users.map(u => (
-                        <div key={u.id} className="glass-card flex justify-between items-center p-4">
-                            <div><div className="font-bold">{u.email}</div><div className={`text-xs uppercase font-bold mt-1 ${u.status==='approved'?'text-green':'text-warning'}`}>{u.status||'pending'}</div></div>
-                            <div className="flex gap-2"><button onClick={()=>updateUserStatus(u.id,'approved')} className="btn-icon text-green"><Icon name="userCheck"/></button><button onClick={()=>updateUserStatus(u.id,'banned')} className="btn-icon text-red"><Icon name="userX"/></button></div>
+                {users.map(u => (
+                    <div key={u.id} className="card" style={{display:'flex', justifyContent:'space-between', marginBottom:'10px', padding:'15px'}}>
+                        <div><div style={{fontWeight:'bold'}}>{u.email}</div><div style={{fontSize:'12px', color:'#888'}}>{u.status||'pending'}</div></div>
+                        <div style={{display:'flex', gap:'10px'}}>
+                            <button onClick={()=>updateUserStatus(u.id,'approved')} className="btn-icon" style={{color:'#10b981'}}><Icon name="userCheck"/></button>
+                            <button onClick={()=>updateUserStatus(u.id,'banned')} className="btn-icon" style={{color:'#ef4444'}}><Icon name="userX"/></button>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
 };
 
-// --- Main App ---
+// --- MAIN APP ---
 const App = () => {
     const [user, setUser] = useState(null);
     const [userStatus, setUserStatus] = useState('loading');
@@ -266,7 +236,6 @@ const App = () => {
         let monthTotal = 0, dailyTotal = 0, catMap = {};
         const todayStr = new Date().toISOString().split('T')[0];
         const currentMonthKey = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
-
         expenses.forEach(e => {
             const amt = parseFloat(e.amount)||0;
             const d = new Date(e.date + 'T00:00:00');
@@ -284,99 +253,134 @@ const App = () => {
     const handleAuth = async (e) => { e.preventDefault(); setAuthError(''); setAuthLoading(true); try { if (isLogin) await signInWithEmailAndPassword(auth, authEmail, authPass); else await createUserWithEmailAndPassword(auth, authEmail, authPass); } catch (err) { setAuthError(err.message.replace('Firebase:', '')); } setAuthLoading(false); };
     const handleGoogle = async () => { setAuthError(''); setAuthLoading(true); try { await signInWithPopup(auth, googleProvider); } catch (err) { setAuthError(err.message); } setAuthLoading(false); };
     const isAdmin = user && ADMIN_EMAILS.some(e => e.toLowerCase() === user.email.toLowerCase());
-    
     const saveCategory = async () => { 
         if (!newCatName.trim()) return; 
         if(categories.some(c => c.label.toLowerCase() === newCatName.trim().toLowerCase())) { alert("Exists!"); return; } 
-        const ref = await addDoc(collection(db, 'users', user.uid, 'categories'), { 
-            label: newCatName, 
-            icon: 'tag', 
-            color: COLORS[Math.floor(Math.random()*COLORS.length)] 
-        }); 
+        const ref = await addDoc(collection(db, 'users', user.uid, 'categories'), { label: newCatName, icon: 'tag', color: COLORS[Math.floor(Math.random()*COLORS.length)] }); 
         setCat(ref.id); setIsAddingCat(false); setNewCatName(''); 
     };
-    
-    const addExpense = async () => {
-        await addDoc(collection(db, 'users', user.uid, 'expenses'), { amount: parseFloat(amount), description: desc, category: cat, date, createdAt: serverTimestamp() });
-        setAmount(''); setDesc(''); setIsFormOpen(false);
-    };
-
-    const getCat = (id) => categories.find(c => c.id === id) || { label: 'Unknown', color: 'bg-gray-500', icon: 'tag' };
+    const addExpense = async () => { await addDoc(collection(db, 'users', user.uid, 'expenses'), { amount: parseFloat(amount), description: desc, category: cat, date, createdAt: serverTimestamp() }); setAmount(''); setDesc(''); setIsFormOpen(false); };
+    const getCat = (id) => categories.find(c => c.id === id) || { label: 'Unknown', color: 'bg-gray', icon: 'tag' };
 
     if (!user) return (
-        <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem'}}>
-            <div className="glass-panel" style={{width: '100%', maxWidth: '400px', padding: '2rem', borderRadius: '1.5rem', textAlign:'center'}}>
-                <div style={{marginBottom: '2rem'}}>
-                    <Icon name="lock" size={32} color="#818cf8" style={{marginBottom:'1rem'}}/>
-                    <h1 style={{fontSize: '2rem', fontWeight: 'bold'}}>ExpenseVibe</h1>
-                    <p style={{color: 'var(--text-muted)'}}>Secure Family Tracking</p>
-                </div>
-                <button onClick={handleGoogle} className="btn btn-secondary" style={{width: '100%', background: 'white', color: 'black', marginBottom: '1.5rem'}}><span style={{color: '#4285F4', fontWeight: 'bold'}}>G</span> Sign in</button>
-                <form onSubmit={handleAuth} className="flex flex-col gap-4"><input type="email" placeholder="Email" className="glass-input" value={authEmail} onChange={e=>setAuthEmail(e.target.value)} required/><input type="password" placeholder="Password" className="glass-input" value={authPass} onChange={e=>setAuthPass(e.target.value)} required/>{authError && <div className="text-red text-sm">{authError}</div>}<button disabled={authLoading} className="btn btn-primary">{authLoading ? '...' : (isLogin ? 'Log In' : 'Sign Up')}</button></form>
-                <button onClick={()=>setIsLogin(!isLogin)} className="text-sm mt-4 text-muted">{isLogin ? "Create account" : "Login"}</button>
+        <div style={{minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'20px'}}>
+            <div className="card" style={{width:'100%', maxWidth:'400px', textAlign:'center'}}>
+                <h1 style={{marginBottom:'20px'}}>ExpenseVibe</h1>
+                <button onClick={handleGoogle} className="btn btn-secondary" style={{width:'100%', background:'white', color:'black', marginBottom:'20px'}}>G Sign In</button>
+                <form onSubmit={handleAuth}>
+                    <input className="input-field" placeholder="Email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)} style={{marginBottom:'10px'}}/>
+                    <input className="input-field" type="password" placeholder="Password" value={authPass} onChange={e=>setAuthPass(e.target.value)} style={{marginBottom:'10px'}}/>
+                    <button className="btn btn-primary">{authLoading?'...':(isLogin?'Login':'Sign Up')}</button>
+                </form>
+                <p onClick={()=>setIsLogin(!isLogin)} style={{marginTop:'20px', color:'#6366f1', cursor:'pointer'}}>{isLogin?"Create Account":"Login"}</p>
             </div>
         </div>
     );
 
-    if (userStatus === 'banned' || (userStatus === 'pending' && !isAdmin)) return <div style={{height:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}><h2>Pending Approval</h2><button onClick={()=>signOut(auth)} className="btn btn-secondary mt-4">Sign Out</button></div>;
+    if (userStatus !== 'approved' && !isAdmin) return <div style={{height:'100vh', display:'flex', alignItems:'center', justifyContent:'center'}}><h2>Waiting for Approval...</h2></div>;
 
     return (
-        <div style={{paddingBottom: '100px'}}>
-            <header className="glass-panel lg-sticky" style={{position:'sticky', top:0, zIndex:10, borderRadius: '0 0 1.5rem 1.5rem', borderTop:'none'}}>
-                <div className="container flex justify-between items-center" style={{height: '80px'}}>
-                    <div className="flex items-center gap-2 font-heading" style={{fontSize: '1.25rem', fontWeight: 'bold'}}><Icon name="sparkles" className="text-primary"/> ExpenseVibe</div>
-                    <div className="flex gap-2">
-                        <button onClick={()=>setIsSettingsOpen(true)} className="btn-icon"><Icon name="settings" size={20}/></button>
-                        {isAdmin && <button onClick={()=>setIsAdminOpen(true)} className="btn btn-secondary text-xs py-1 px-3"><Icon name="shield"/> Admin</button>}
+        <div className="container">
+            <div className="app-header">
+                <div className="header-content">
+                    <div className="logo"><Icon name="sparkles" size={20} color="#6366f1"/> ExpenseVibe</div>
+                    <div className="header-actions">
+                        <button onClick={()=>setIsSettingsOpen(true)} className="btn-icon"><Icon name="settings"/></button>
+                        {isAdmin && <button onClick={()=>setIsAdminOpen(true)} className="btn-icon"><Icon name="shield"/></button>}
                         <button onClick={()=>signOut(auth)} className="btn-icon"><Icon name="logOut"/></button>
                     </div>
                 </div>
-            </header>
+            </div>
 
-            <main className="container lg-grid" style={{marginTop: '1.5rem'}}>
-                <div>
-                    <div className="grid-cols-2" style={{marginBottom: '1rem'}}>
-                        <div className="glass-card"><div className="flex justify-between mb-2 text-xs text-muted uppercase font-bold">Month</div><div className="font-heading" style={{fontSize: '1.5rem'}}>{formatCurrency(data.monthTotal)}</div></div>
-                        <div className="glass-card"><div className="flex justify-between mb-2 text-xs text-muted uppercase font-bold">Today</div><div className="font-heading" style={{fontSize: '1.5rem'}}>{formatCurrency(data.dailyTotal)}</div></div>
-                    </div>
-                    {data.monthTotal > 0 && <div className="glass-card flex-col gap-2">
-                        <div className="text-sm font-bold text-muted mb-2">Breakdown</div>
-                        {data.analytics.map(c => c.amount > 0 && <div key={c.id}><div className="flex justify-between text-xs mb-1"><span>{c.label}</span><span className="font-mono">{formatCurrency(c.amount)}</span></div><div style={{height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow:'hidden'}}><div style={{width: `${(c.amount/data.monthTotal)*100}%`, height:'100%'}} className={c.color}></div></div></div>)}
-                    </div>}
-                    <button onClick={()=>setIsFormOpen(true)} className="btn btn-primary desktop-btn"><Icon name="plus"/> Add Expense</button>
+            <div className="stats-grid">
+                <div className="card">
+                    <div className="stat-label">Month</div>
+                    <div className="stat-value">{formatCurrency(data.monthTotal)}</div>
                 </div>
+                <div className="card">
+                    <div className="stat-label">Today</div>
+                    <div className="stat-value">{formatCurrency(data.dailyTotal)}</div>
+                </div>
+            </div>
 
-                <div className="flex flex-col gap-3">
-                    {data.groups.map(g => (
-                        <div key={g.title} className="glass-card" style={{padding: 0, overflow: 'hidden'}}>
-                            <div onClick={()=>setExpanded(p=>({...p, [g.title]:!p[g.title]}))} style={{padding: '1rem', background: 'rgba(255,255,255,0.02)', cursor:'pointer'}} className="flex justify-between items-center">
-                                <div className="font-bold text-sm flex gap-2 items-center">{g.title}</div>
-                                <div className="text-xs font-bold text-muted">{formatCurrency(g.total)}</div>
+            {data.monthTotal > 0 && (
+                <div className="card" style={{marginBottom:'20px'}}>
+                    <div className="section-title">Breakdown</div>
+                    {data.analytics.map(c => c.amount > 0 && (
+                        <div key={c.id} style={{marginBottom:'10px'}}>
+                            <div style={{display:'flex', justifyContent:'space-between', fontSize:'12px', marginBottom:'5px'}}>
+                                <span>{c.label}</span>
+                                <span>{formatCurrency(c.amount)}</span>
                             </div>
-                            {expanded[g.title] && <div>{g.items.map(i => {
-                                const c = getCat(i.category);
-                                return (
-                                    <div key={i.id} className="list-item hover:bg-white/5">
-                                        <div className="flex gap-3 items-center">
-                                            <div className={`category-icon ${c.color}`}><Icon name={c.icon || 'tag'} size={18}/></div>
-                                            <div>
-                                                <div className="font-bold text-sm">{i.description}</div>
-                                                <div className="text-xs text-muted">{formatDate(i.date)}</div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3"><span className="font-bold font-mono text-sm">{formatCurrency(i.amount)}</span>
-                                        <button onClick={()=>deleteDoc(doc(db,'users',user.uid,'expenses',i.id))} className="btn-icon text-red"><Icon name="trash" size={16}/></button>
-                                        </div>
-                                    </div>
-                                );
-                            })}</div>}
+                            <div style={{height:'6px', background:'rgba(255,255,255,0.1)', borderRadius:'3px', overflow:'hidden'}}>
+                                <div style={{height:'100%', width:`${(c.amount/data.monthTotal)*100}%`}} className={c.color}></div>
+                            </div>
                         </div>
                     ))}
                 </div>
-            </main>
+            )}
 
-            <button onClick={()=>setIsFormOpen(true)} className="fab"><Icon name="plus" size={28}/></button>
-            {isFormOpen && <div className="modal-overlay"><div className="modal-content glass-panel"><div className="flex justify-between items-center mb-6"><h2 className="font-heading text-xl font-bold">Add Expense</h2><button onClick={()=>{setIsFormOpen(false);setIsAddingCat(false);}} className="btn-icon"><Icon name="chevronDown"/></button></div><div className="flex flex-col gap-4"><div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-2xl">₹</span><input type="number" value={amount} onChange={e=>setAmount(e.target.value)} className="glass-input" style={{paddingLeft: '3rem', fontSize: '2rem', fontWeight: 'bold'}} placeholder="0.00" autoFocus/></div><input type="text" placeholder="Description" value={desc} onChange={e=>setDesc(e.target.value)} className="glass-input"/><div className="grid-cols-2">{!isAddingCat ? <div className="relative"><select value={cat} onChange={e => {if(e.target.value==='_NEW_')setIsAddingCat(true);else setCat(e.target.value);}} className="glass-input" style={{appearance: 'none'}}>{categories.map(c=><option key={c.id} value={c.id} style={{color:'black'}}>{c.label}</option>)}<option value="_NEW_" style={{color:'black'}}>✨ Create New...</option></select><Icon name="chevronDown" className="absolute right-4 top-1/2 -translate-y-1/2 text-muted" size={16}/></div> : <div className="flex gap-2"><input type="text" placeholder="New Category" value={newCatName} onChange={e=>setNewCatName(e.target.value)} className="glass-input" autoFocus/><button onClick={saveCategory} className="btn btn-primary"><Icon name="check"/></button></div>}<input type="date" value={date} onChange={e=>setDate(e.target.value)} className="glass-input"/></div><button onClick={addExpense} className="btn btn-primary w-full" style={{marginTop: '1rem'}}>Save</button></div></div></div>}
+            {data.groups.map(g => (
+                <div key={g.title} className="expense-group">
+                    <div className="group-header" onClick={()=>setExpanded(p=>({...p, [g.title]:!p[g.title]}))}>
+                        <div>{g.title}</div>
+                        <div>{formatCurrency(g.total)}</div>
+                    </div>
+                    {expanded[g.title] && g.items.map(i => {
+                        const c = getCat(i.category);
+                        return (
+                            <div key={i.id} className="expense-item">
+                                <div className="item-left">
+                                    <div className={`icon-box ${c.color}`}><Icon name={c.icon || 'tag'}/></div>
+                                    <div className="item-details">
+                                        <h4>{i.description}</h4>
+                                        <p>{formatDate(i.date)}</p>
+                                    </div>
+                                </div>
+                                <div className="item-right">
+                                    <div className="item-amount">{formatCurrency(i.amount)}</div>
+                                    <button onClick={()=>deleteDoc(doc(db,'users',user.uid,'expenses',i.id))} style={{color:'#ef4444', background:'none', border:'none', cursor:'pointer'}}><Icon name="trash" size={16}/></button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            ))}
+
+            <button className="fab" onClick={()=>setIsFormOpen(true)}><Icon name="plus" size={28}/></button>
+
+            {isFormOpen && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div style={{display:'flex', justifyContent:'space-between', marginBottom:'20px'}}>
+                            <h2>Add Expense</h2>
+                            <button onClick={()=>setIsFormOpen(false)} className="btn-icon"><Icon name="chevronDown"/></button>
+                        </div>
+                        <div className="input-group">
+                            <input type="number" className="input-field big-input" placeholder="0.00" value={amount} onChange={e=>setAmount(e.target.value)} autoFocus/>
+                        </div>
+                        <div className="input-group">
+                            <input type="text" className="input-field" placeholder="Description" value={desc} onChange={e=>setDesc(e.target.value)}/>
+                        </div>
+                        <div className="input-group" style={{display:'flex', gap:'10px'}}>
+                            {!isAddingCat ? (
+                                <select className="input-field" value={cat} onChange={e=>{if(e.target.value==='NEW')setIsAddingCat(true);else setCat(e.target.value);}}>
+                                    {categories.map(c=><option key={c.id} value={c.id} style={{color:'black'}}>{c.label}</option>)}
+                                    <option value="NEW" style={{color:'black'}}>+ New...</option>
+                                </select>
+                            ) : (
+                                <div style={{display:'flex', gap:'10px', width:'100%'}}>
+                                    <input className="input-field" placeholder="New Category" value={newCatName} onChange={e=>setNewCatName(e.target.value)}/>
+                                    <button onClick={saveCategory} className="btn btn-secondary"><Icon name="check"/></button>
+                                </div>
+                            )}
+                            <input type="date" className="input-field" value={date} onChange={e=>setDate(e.target.value)}/>
+                        </div>
+                        <button onClick={addExpense} className="btn btn-primary">Save Expense</button>
+                    </div>
+                </div>
+            )}
+
             {isAdminOpen && <AdminPanel onClose={()=>setIsAdminOpen(false)} />}
             {isSettingsOpen && <SettingsPanel onClose={()=>setIsSettingsOpen(false)} user={user} categories={categories} />}
         </div>
