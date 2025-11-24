@@ -1,4 +1,4 @@
-/* --- VARS & RESET --- */
+/* --- 1. RESET & VARS --- */
 :root {
     --bg-dark: #0f172a;
     --glass-bg: rgba(30, 41, 59, 0.7);
@@ -65,3 +65,37 @@ body {
     transition: transform 0.1s;
 }
 .btn-primary:active { transform: scale(0.98); }
+
+/* --- 7. MANDATORY COLOR PALETTE (Fixes Missing Colors) --- */
+/* These ensure colors appear even if Tailwind CDN misses them */
+
+.bg-orange-500 { background-color: #f97316 !important; }
+.bg-orange-600 { background-color: #ea580c !important; }
+
+.bg-blue-500 { background-color: #3b82f6 !important; }
+.bg-blue-600 { background-color: #2563eb !important; }
+
+.bg-purple-500 { background-color: #a855f7 !important; }
+.bg-purple-600 { background-color: #9333ea !important; }
+
+.bg-green-500 { background-color: #22c55e !important; }
+.bg-green-600 { background-color: #16a34a !important; }
+
+.bg-yellow-500 { background-color: #eab308 !important; }
+.bg-yellow-600 { background-color: #ca8a04 !important; }
+
+.bg-gray-500 { background-color: #6b7280 !important; }
+.bg-gray-600 { background-color: #4b5563 !important; }
+
+.bg-red-500 { background-color: #ef4444 !important; }
+.bg-amber-500 { background-color: #f59e0b !important; }
+.bg-lime-500 { background-color: #84cc16 !important; }
+.bg-emerald-500 { background-color: #10b981 !important; }
+.bg-teal-500 { background-color: #14b8a6 !important; }
+.bg-cyan-500 { background-color: #06b6d4 !important; }
+.bg-sky-500 { background-color: #0ea5e9 !important; }
+.bg-indigo-500 { background-color: #6366f1 !important; }
+.bg-violet-500 { background-color: #8b5cf6 !important; }
+.bg-fuchsia-500 { background-color: #d946ef !important; }
+.bg-pink-500 { background-color: #ec4899 !important; }
+.bg-rose-500 { background-color: #f43f5e !important; }
