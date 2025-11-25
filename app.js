@@ -33,6 +33,80 @@ const SettingsPanel = ({ onClose, user, categories, isAdmin }) => {
     const [sourceCat, setSourceCat] = useState('');
     const [targetCat, setTargetCat] = useState('');
     const [mergeLoading, setMergeLoading] = useState(false);
+    const [recoverLoading, setRecoverLoading] = useState(false);
+    const [fixLoading, setFixLoading] = useState(false);
+
+    const handleFixLinks = async () => {
+        setFixLoading(true);
+        try {
+            const qExp = query(collection(db, 'users', user.uid, 'expenses'));
+            const snapExp = await getDocs(qExp);
+            const privCatMap = {};
+            categories.forEach(c => privCatMap[c.label.toLowerCase()] = c.id);
+            const qPub = query(collection(db, 'categories'));
+            const snapPub = await getDocs(qPub);
+            const pubIdToLabel = {};
+            snapPub.forEach(d => pubIdToLabel[d.id] = d.data().label.toLowerCase());
+            const batch = writeBatch(db);
+            let updatedCount = 0;
+            snapExp.forEach(docSnapshot => {
+                const exp = docSnapshot.data();
+                const isLinked = categories.some(c => c.id === exp.category);
+                if (!isLinked) {
+                    const oldLabel = pubIdToLabel[exp.category];
+                    if (oldLabel && privCatMap[oldLabel]) {
+                        batch.update(docSnapshot.ref, { category: privCatMap[oldLabel] });
+                        updatedCount++;
+                    }
+                }
+            });
+            if (updatedCount > 0) { await batch.commit(); alert(`Fixed ${updatedCount} links!`); } else { alert("No broken links found."); }
+        } catch (e) { alert(e.message); }
+        setFixLoading(false);
+    }
+
+    const handleFullRestore = async () => {
+        if (!confirm("Restore shared data to private?")) return;
+        setRecoverLoading(true);
+        try {
+            const batch = writeBatch(db);
+            let totalCount = 0;
+            const qExp = query(collection(db, 'family_expenses'), where('userId', '==', user.uid));
+            const snapExp = await getDocs(qExp);
+            snapExp.forEach(docSnapshot => { const newRef = doc(collection(db, 'users', user.uid, 'expenses')); batch.set(newRef, docSnapshot.data()); totalCount++; });
+            const qPubCats = query(collection(db, 'categories'));
+            const snapPubCats = await getDocs(qPubCats);
+            const qMyCats = query(collection(db, 'users', user.uid, 'categories'));
+            const snapMyCats = await getDocs(qMyCats);
+            const myCatLabels = snapMyCats.docs.map(d => d.data().label.toLowerCase());
+            snapPubCats.forEach(docSnapshot => { const catData = docSnapshot.data(); if (!myCatLabels.includes(catData.label.toLowerCase())) { const newCatRef = doc(collection(db, 'users', user.uid, 'categories')); batch.set(newCatRef, catData); totalCount++; } });
+            if (totalCount > 0) { await batch.commit(); alert(`Recovered ${totalCount} items.`); window.location.reload(); } else { alert("No data found."); }
+        } catch (e) { alert(e.message); }
+        setRecoverLoading(false);
+    };
+
+    const handleMerge = async () => {
+        if (!sourceCat || !targetCat || sourceCat === targetCat) return;
+        setMergeLoading(true);
+        try {
+            // 1. Update expenses
+            const q = query(collection(db, 'users', user.uid, 'expenses'), where('category', '==', sourceCat));
+            const snapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            snapshot.forEach(docSnapshot => { batch.update(docSnapshot.ref, { category: targetCat }); });
+            await batch.commit();
+            
+            // 2. If Admin, delete global category
+            if (isAdmin) {
+               await deleteDoc(doc(db, 'categories', sourceCat));
+               alert("Expenses Updated & Global Category Deleted!");
+            } else {
+               alert("Your Expenses Updated! (Global Category kept for others)");
+            }
+            setSourceCat(''); setTargetCat('');
+        } catch (error) { alert(error.message); }
+        setMergeLoading(false);
+    };
     
     // Only Admins can delete global categories
     const handleDeleteCategory = async (catId) => {
@@ -43,18 +117,6 @@ const SettingsPanel = ({ onClose, user, categories, isAdmin }) => {
         } catch (e) { alert(e.message); }
     };
 
-    const handleMerge = async () => {
-        if (!sourceCat || !targetCat || sourceCat === targetCat) return;
-        if (!isAdmin) { alert("Only Admins can merge Global Categories."); return; }
-        setMergeLoading(true);
-        try {
-            await deleteDoc(doc(db, 'categories', sourceCat));
-            alert("Category Removed from Global List."); 
-            setSourceCat(''); setTargetCat('');
-        } catch (error) { alert(error.message); }
-        setMergeLoading(false);
-    };
-
     return (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="glass-panel w-full max-w-md rounded-2xl p-6">
@@ -63,15 +125,23 @@ const SettingsPanel = ({ onClose, user, categories, isAdmin }) => {
                     <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-700 text-gray-400"><Icon name="check"/></button>
                 </div>
                 
-                {isAdmin && (
-                    <div className="glass-card p-4 mb-4">
-                        <h3 className="font-bold text-sm mb-2 flex items-center gap-2 text-gray-300"><Icon name="merge" size={16}/> Merge (Admin)</h3>
-                        <div className="flex flex-col gap-2">
-                            <select className="glass-input p-2 rounded-lg bg-gray-800 text-white border border-gray-700" value={sourceCat} onChange={e=>setSourceCat(e.target.value)}><option value="">Remove...</option>{categories.map(c=><option key={c.id} value={c.id} className="text-black">{c.label}</option>)}</select>
-                            <button onClick={handleMerge} disabled={mergeLoading} className="bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg w-full transition">{mergeLoading?"...":"Remove Category"}</button>
-                        </div>
+                <div className="glass-card p-4 mb-4 bg-indigo-900 bg-opacity-20 border-indigo-500 border-opacity-30">
+                    <h3 className="font-bold text-sm mb-2 flex items-center gap-2 text-indigo-400"><Icon name="link" size={16}/> Data Tools</h3>
+                    <div className="flex gap-2">
+                        <button onClick={handleFixLinks} disabled={fixLoading} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg text-xs font-bold flex-1 transition">{fixLoading?"...":"Fix Links"}</button>
+                        <button onClick={handleFullRestore} disabled={recoverLoading} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg text-xs font-bold flex-1 transition">{recoverLoading?"...":"Restore Shared"}</button>
                     </div>
-                )}
+                </div>
+
+                <div className="glass-card p-4 mb-4">
+                    <h3 className="font-bold text-sm mb-2 flex items-center gap-2 text-gray-300"><Icon name="merge" size={16}/> Merge Duplicates</h3>
+                    <div className="flex flex-col gap-2">
+                        <select className="glass-input p-2 rounded-lg bg-gray-800 text-white border border-gray-700" value={sourceCat} onChange={e=>setSourceCat(e.target.value)}><option value="">Remove...</option>{categories.map(c=><option key={c.id} value={c.id} className="text-black">{c.label}</option>)}</select>
+                        <div className="text-center text-gray-500"><Icon name="chevronDown" size={16}/></div>
+                        <select className="glass-input p-2 rounded-lg bg-gray-800 text-white border border-gray-700" value={targetCat} onChange={e=>setTargetCat(e.target.value)}><option value="">Keep...</option>{categories.map(c=><option key={c.id} value={c.id} className="text-black">{c.label}</option>)}</select>
+                        <button onClick={handleMerge} disabled={mergeLoading} className="bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg w-full transition mt-2">{mergeLoading?"Merging...":"Merge"}</button>
+                    </div>
+                </div>
                 
                 <div className="glass-card p-4">
                     <h3 className="font-bold text-sm mb-2 text-gray-300">Global Categories</h3>
@@ -195,8 +265,8 @@ const App = () => {
         return () => unsub();
     }, []);
 
+    // 1. GLOBAL CATEGORIES
     useEffect(() => {
-        if (!user) return;
         const q = query(collection(db, 'categories'), orderBy('label'));
         const unsub = onSnapshot(q, async (snap) => {
             if (snap.empty) for (const def of DEFAULT_CATEGORIES) await addDoc(collection(db, 'categories'), def);
@@ -205,6 +275,7 @@ const App = () => {
         return () => unsub();
     }, [cat]);
 
+    // 2. PRIVATE EXPENSES
     useEffect(() => {
         if (!user || userStatus !== 'approved') return;
         const q = query(collection(db, 'users', user.uid, 'expenses'));
@@ -271,7 +342,14 @@ const App = () => {
     };
     
     const addTransaction = async () => { 
-        await addDoc(collection(db, 'users', user.uid, 'expenses'), { amount: parseFloat(amount), description: desc, category: type === 'income' ? 'income_source' : cat, date, type, createdAt: serverTimestamp() }); 
+        await addDoc(collection(db, 'users', user.uid, 'expenses'), { 
+            amount: parseFloat(amount), 
+            description: desc, 
+            category: type === 'income' ? 'income_source' : cat, 
+            date, 
+            type, 
+            createdAt: serverTimestamp() 
+        }); 
         setAmount(''); setDesc(''); setIsFormOpen(false); 
     };
     
@@ -331,7 +409,7 @@ const App = () => {
                 </div>
             </div>
 
-            {/* Breakdown Section - Added Back */}
+            {/* Breakdown Section */}
             {data.monthTotal > 0 && (
                 <div className="glass-card p-5 rounded-3xl mb-6">
                     <div className="text-sm font-bold text-gray-300 mb-4 flex gap-2 items-center"><Icon name="pieChart" size={16}/> Breakdown</div>
